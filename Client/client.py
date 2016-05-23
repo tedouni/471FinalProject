@@ -34,7 +34,7 @@ def serverDirectoryListing(clientSocket, serverAddress):
     if (int(numberOfFiles != 0 )):
 
         receivedFiles = 0
-        while(receivedFiles <= numberOfFiles):
+        while(int(receivedFiles) <= int(numberOfFiles)):
             fileName = newSocket.recv(SERVER_MSG_SIZE)
             receivedFiles +=1
             print fileName
