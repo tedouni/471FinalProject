@@ -2,6 +2,7 @@ import socket
 import sys
 import os
 
+SERVER_MSG_SIZE = 1024
 def clientLocalListing():
     print "Listing files on client:"
     directoryListing = os.listdir(".")
@@ -16,6 +17,18 @@ def displayCommands():
         print "ftp> lls (lists files on the client)"
         print "ftp> quit (disconnect)"
         print "ftp> help (displays commands)\n"
+
+def serverDirectoryListing(clientSocket, serverAddress):
+    #ephemeral Setup
+    print "ephemeral Setup"
+    ephemPort = clientSocket.recv(SERVER_MSG_SIZE)
+    print "Connecting to (ephemeral) " + serverAddress + "at port "+str(ephemPort)
+    
+
+
+    print "Listing files on server:"
+
+
 
 def main():
 
@@ -46,11 +59,14 @@ def main():
 
         if(userInput == "quit"):
             print "Closing Connection..."
+            clientSocket.send(userInput)
             clientSocket.close()
             print "Connection Closed"
             break
         elif (userInput == "ls"):
-            print "Listing files on server:"
+            clientSocket.send(userInput)
+            serverDirectoryListing(clientSocket, serverAddress)
+
         elif (userInput == "lls"):
             clientLocalListing()
         elif (userInput == "help"):
