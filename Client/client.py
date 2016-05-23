@@ -24,20 +24,21 @@ def serverDirectoryListing(clientSocket, serverAddress):
     ephemPort = clientSocket.recv(SERVER_MSG_SIZE)
     print "Connecting to (ephemeral) " + serverAddress + "at port "+str(ephemPort)
     newSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    newSocket.connect((serverAddress, ephemPort))
+    newSocket.connect((serverAddress, int(ephemPort)))
     print "Connected"
 
     numberOfFiles = newSocket.recv(SERVER_MSG_SIZE)
+    print  "files located on server directory = " + numberOfFiles
     #Confirm Received
-    newSocket.send(numberOfFiles)
+    newSocket.send(str(numberOfFiles))
     if (int(numberOfFiles != 0 )):
-        print numberOfFiles + " files located on server directory"
+
         receivedFiles = 0
-        while(receivedFiles != numberOfFiles):
+        while(receivedFiles <= numberOfFiles):
             fileName = newSocket.recv(SERVER_MSG_SIZE)
             receivedFiles +=1
             print fileName
-            newSocket.send(str(receivedFiles))
+            # newSocket.send(str(receivedFiles))
 
     else:
         print 'No files listed'
