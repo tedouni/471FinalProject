@@ -1,13 +1,14 @@
 import socket
 import sys
 import os
-
+#test
 port = 1200
 backlog = 100
 # The client message size
 CLIENT_MSG_SIZE = 1024
 def localList(client):
 	#Setup ephemeral
+	print "Setting up Data Connection"
 	newSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	newSock.bind(('',0))
 	newSock.listen(backlog)
@@ -17,26 +18,40 @@ def localList(client):
 	client.send(str(sendPortNum))
 	print "Connecting on port " + str(sendPortNum)
 	newClient , newAddress = newSock.accept()
+	print "Connected on port " + str(sendPortNum)
 
 
 	localFiles = os.listdir(".")
 	for file in localFiles:
 		print file
-	print "Connected on port " + str(sendPortNum)
 	print len(localFiles)
+	#Send current item
 	newClient.send(str(len(localFiles)))
 
+
 	recieveCheck =newClient.recv(CLIENT_MSG_SIZE)
+
 	if int(recieveCheck) != len(localFiles):
 		print "ERROR in transmission of # of files"
 		newClient.close()
 		exit()
 	else:
 		for file in localFiles:
-			newClient.send(file)
+			if not file:
+				pass
+			else:
+				newClient.send(file)
+				recieveCheck = newClient.recv(CLIENT_MSG_SIZE)
+				if(recieveCheck != file):
+					print 'ERROR in transmiting fileName'
+					print 'Resending'
+					newClient.send(file)
 
 
+
+	print "Closing Data Connection"
 	newSock.close()
+	print "Data Connection Closed"
 
 
 
@@ -56,13 +71,13 @@ def main():
 	listenSocket.listen(backlog)
 
 
-	print "Listening on port %d" % listenSocket.getsockname()[1]
 	# Service clients forever
-
+	client, address = listenSocket.accept()
 	while 1:
 
 		# Accept a connection from the client
-		client, address = listenSocket.accept()
+		print "Listening on port %d" % listenSocket.getsockname()[1]
+
 
 		# Get the data from the client
 		data = client.recv(CLIENT_MSG_SIZE)
@@ -75,8 +90,10 @@ def main():
 			break
 		elif (data == "ls"):
 			localList(client)
+		else:
+			pass
 
-		client.send("DONE")
+		# client.send("DONE")
 
 if __name__ == '__main__':
 	main()

@@ -20,10 +20,11 @@ def displayCommands():
 
 def serverDirectoryListing(clientSocket, serverAddress):
     #ephemeral Setup
-    print "ephemeral Setup"
+    print "Data Connection Setup"
     ephemPort = clientSocket.recv(SERVER_MSG_SIZE)
-    print "Connecting to (ephemeral) " + serverAddress + "at port "+str(ephemPort)
+    print "Data Connection: " + serverAddress + "at port "+str(ephemPort)
     newSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     newSocket.connect((serverAddress, int(ephemPort)))
     print "Connected"
 
@@ -37,14 +38,19 @@ def serverDirectoryListing(clientSocket, serverAddress):
         while(int(receivedFiles) <= int(numberOfFiles)):
             fileName = newSocket.recv(SERVER_MSG_SIZE)
             receivedFiles +=1
+            if not fileName:
+                break
+
             print fileName
+            #verify that we received data
+            newSocket.send(fileName)
             # newSocket.send(str(receivedFiles))
 
     else:
         print 'No files listed'
-    print 'Closing ephemeral connection \n'
+    print 'Closing Data connection \n'
     newSocket.close()
-
+    print 'Data connection closed'
 
 
 
