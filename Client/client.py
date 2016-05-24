@@ -53,6 +53,39 @@ def serverDirectoryListing(clientSocket, serverAddress):
     print 'Data connection closed'
 
 
+def getFile(fileName,clientSocket,serverAddress):
+    print "Data Connection Setup"
+    ephemPort = clientSocket.recv(SERVER_MSG_SIZE)
+    print 'test'
+    print "Data Connection: " + serverAddress + "at port "+str(ephemPort)
+    newSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    newSocket.connect((serverAddress, int(ephemPort)))
+    print "Connected"
+
+    fileSize = newSocket.recv(SERVER_MSG_SIZE)
+    print  "fileSize = " + fileSize
+
+    inputFile = open(fileName,'wb')
+
+    #ACK that we received fileSize
+    newSocket.send(fileSize)
+    bytesRecvd = 0
+
+    while(bytesRecvd != int(fileSize)):
+        tempData = newSocket.recv(SERVER_MSG_SIZE)
+        print tempData
+        bytesRecvd += len(tempData)
+
+        if not tempData:
+            break
+        inputFile.write(tempData)
+    print 'Recieved ' + str(bytesRecvd) + ' bytes out of ' +str(fileSize) + ' bytes'
+    print 'Closing Data Connection'
+    newSocket.close()
+    print 'Data Connection closed'
+
+
 
 
 def main():
@@ -79,7 +112,6 @@ def main():
     displayCommands()
     while (1):
 
-
         userInput = raw_input("ftp> ")
 
         if(userInput == "quit"):
@@ -96,22 +128,13 @@ def main():
             clientLocalListing()
         elif (userInput == "help"):
             displayCommands()
+        elif (userInput[:3] == "get"):
+            clientSocket.send(userInput)
+            getFile(userInput[4:],clientSocket,serverAddress)
+
         else:
             print("Error: Invalid Command.")
 
 
 if __name__ == '__main__':
     main()
-
-    #
-    #
-    # # Send a string to the server
-    # clientSocket.send(testVar)
-    #
-    # # Get the date from the server
-    # data = clientSocket.recv(SERVER_MSG_SIZE)
-    #
-    # print 'Received:', data, ' from the server'
-    #
-    # # Close the connection to the server
-    # clientSocket.close()

@@ -53,6 +53,55 @@ def localList(client):
 	newSock.close()
 	print "Data Connection Closed"
 
+def serverSendFile(fileName, client):
+	print "Setting up Data Connection"
+	newSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	newSock.bind(('',0))
+	newSock.listen(backlog)
+
+	#send port number to client
+	sendPortNum = newSock.getsockname()[1]
+	client.send(str(sendPortNum))
+	print "Connecting on port " + str(sendPortNum)
+	newClient , newAddress = newSock.accept()
+	print "Connected on port " + str(sendPortNum)
+
+	try:
+		fileSize = str(os.path.getsize(fileName))
+		newClient.send((fileSize))
+	except os.error:
+		print 'ERROR: File does not exist'
+		newClient.send(str(0))
+		newClient.close()
+		exit()
+
+	receivedTest = newClient.recv(CLIENT_MSG_SIZE)
+	if (receivedTest != fileSize):
+		print 'ERROR in File Size'
+		newClient.close()
+		exit
+	else:
+		outputFile = open(fileName, 'rb')
+		bytesSent = 0
+
+
+		while(bytesSent <= int(fileSize)):
+			print 'HELLOTEST'
+			tempData = outputFile.read(64)
+			newClient.send(tempData)
+			bytesSent += len(tempData)
+	print 'Closing Data Connection'
+	newClient.close()
+
+
+
+
+	localFiles = os.listdir(".")
+	for file in localFiles:
+		print file
+	print len(localFiles)
+	#Send current item
+	newClient.send(str(len(localFiles)))
 
 
 
@@ -90,6 +139,8 @@ def main():
 			break
 		elif (data == "ls"):
 			localList(client)
+		elif (data[:3]):
+			serverSendFile(data[4:],client)
 		else:
 			pass
 
