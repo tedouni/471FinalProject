@@ -89,7 +89,41 @@ def getFile(fileName,clientSocket,serverAddress):
     print '\n'
 
 
+def putFile(fileName,clientSocket,serverAddress):
+    print "Data Connection Setup"
+    ephemPort = clientSocket.recv(SERVER_MSG_SIZE)
+    print "Data Connection: " + serverAddress + "at port "+str(ephemPort)
+    newSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    newSocket.connect((serverAddress, int(ephemPort)))
+    print "Connected"
+
+    try:
+    	fileSize = str(os.path.getsize(fileName))
+    	newSocket.send((fileSize))
+    except os.error:
+    	print 'ERROR: File does not exist'
+    	newSocket.send(str(0))
+    	newSocket.close()
+    	exit()
+    receivedTest = newSocket.recv(SERVER_MSG_SIZE)
+    if (receivedTest != fileSize):
+    	print 'ERROR in File Size'
+    	newSocket.close()
+    	exit()
+    else:
+        outputFile = open(fileName, 'rb')
+    	bytesSent = 0
+
+
+    	while(bytesSent != int(fileSize)):
+    		tempData = outputFile.read(64)
+    		newSocket.send(tempData)
+    		bytesSent += len(tempData)
+    print 'Sent '+ str(bytesSent) +' bytes out of ' + str(fileSize) +' bytes'
+    outputFile.close()
+    print 'Closing Data Connection'
+    newSocket.close()
 
 def main():
 
@@ -134,7 +168,9 @@ def main():
         elif (userInput[:3] == "get"):
             clientSocket.send(userInput)
             getFile(userInput[4:],clientSocket,serverAddress)
-
+        elif (userInput[:3] == "put"):
+            clientSocket.send(userInput)
+            putFile(userInput[4:],clientSocket,serverAddress)
         else:
             print("Error: Invalid Command.")
 

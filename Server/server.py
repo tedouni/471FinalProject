@@ -80,7 +80,7 @@ def serverSendFile(fileName, client):
 	if (receivedTest != fileSize):
 		print 'ERROR in File Size'
 		newClient.close()
-		exit
+		exit()
 	else:
 		outputFile = open(fileName, 'rb')
 		bytesSent = 0
@@ -93,6 +93,43 @@ def serverSendFile(fileName, client):
 	outputFile.close()
 	print 'Closing Data Connection'
 	newClient.close()
+
+def getClientFile(fileName,client):
+	print "Setting up Data Connection"
+	newSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	newSock.bind(('',0))
+	newSock.listen(backlog)
+
+	#send port number to client
+	sendPortNum = newSock.getsockname()[1]
+	client.send(str(sendPortNum))
+	print "Connecting on port " + str(sendPortNum)
+	newClient , newAddress = newSock.accept()
+	print "Connected on port " + str(sendPortNum)
+
+	fileSize = newClient.recv(CLIENT_MSG_SIZE)
+	print  "fileSize = " + str(fileSize)
+
+	inputFile = open(fileName,'wb')
+
+	#ACK that we received fileSize
+	newClient.send(fileSize)
+	bytesRecvd = 0
+
+	while(bytesRecvd != int(fileSize)):
+	    tempData = newClient.recv(CLIENT_MSG_SIZE)
+	    # print tempData
+	    bytesRecvd += len(tempData)
+
+	    if not tempData:
+	        break
+	    inputFile.write(tempData)
+	print 'Recieved ' + str(bytesRecvd) + ' bytes out of ' +str(fileSize) + ' bytes'
+	print 'Closing Data Connection'
+	inputFile.close()
+	newClient.close()
+	print 'Data Connection closed'
+	print '\n'
 
 
 def main():
@@ -127,8 +164,10 @@ def main():
 			break
 		elif (data == "ls"):
 			localList(client)
-		elif (data[:3]):
+		elif (data[:3] == 'get'):
 			serverSendFile(data[4:],client)
+		elif (data[:3] == 'put'):
+			getClientFile(data[4:],client)
 		else:
 			pass
 
