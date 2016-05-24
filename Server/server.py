@@ -1,8 +1,8 @@
 import socket
 import sys
 import os
-#test
-port = 1200
+
+
 backlog = 100
 # The client message size
 CLIENT_MSG_SIZE = 1024
@@ -22,9 +22,9 @@ def localList(client):
 
 
 	localFiles = os.listdir(".")
-	for file in localFiles:
-		print file
-	print len(localFiles)
+	# for file in localFiles:
+	# 	print file
+	# print len(localFiles)
 	#Send current item
 	newClient.send(str(len(localFiles)))
 
@@ -46,6 +46,7 @@ def localList(client):
 					print 'ERROR in transmiting fileName'
 					print 'Resending'
 					newClient.send(file)
+
 
 
 
@@ -94,12 +95,8 @@ def serverSendFile(fileName, client):
 	newClient.close()
 
 
-
-
-
-
 def main():
-
+	port = int(sys.argv[1])
 
 	# Create A TCP socket
 	listenSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -121,7 +118,7 @@ def main():
 
 		# Get the data from the client
 		data = client.recv(CLIENT_MSG_SIZE)
-		print "GOT: " + str(data) + " from client"
+		print "GOT: '" + str(data) + "' from client"
 
 		if(data == "quit"):
 			print "Closing Connection"

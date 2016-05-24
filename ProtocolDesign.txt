@@ -1,0 +1,63 @@
+'LLS':
+Does not require server connection
+
+'LS'
+
+Client                     Server
+Connect --------------------->
+      <------------------- Port for Data conn
+ConnectData-------------------->
+       <----------------- numberOfFiles
+ACK nOF ----------------->
+       <------------------eachFileName
+ACK eachFileName --------->
+       <------------------eachFileName
+ACK eachFileName --------->
+              ....
+			  ....
+   -----------Close Data---------------
+
+	  
+	  
+'GET'
+
+Client                     Server
+Connect --------------------->
+      <------------------- Port for Data conn
+ConnectData-------------------->
+       <----------------- fileSize
+ACK fileSize ----------------->
+       <------------------bytesOfData
+ACK bytesOfData --------->
+       <------------------bytesOfData
+ACK bytesOfData --------->
+              ....
+			  ....
+   -----------Close Data---------------
+
+   
+   
+ 
+	  
+'Put'
+
+Server                     Client
+	 <---------------------Connect
+Port for Data conn ------->
+      <--------------------Connect Data
+       <----------------- fileSize
+ACK fileSize ----------------->
+       <------------------bytesOfData
+ACK bytesOfData --------->
+       <------------------bytesOfData
+ACK bytesOfData --------->
+              ....
+			  ....
+   -----------Close Data---------------
+   --------------Close ---------------
+
+'Quit'
+Client						Server
+   -------------Close--------------
+   
+   

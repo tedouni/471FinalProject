@@ -46,17 +46,18 @@ def serverDirectoryListing(clientSocket, serverAddress):
             newSocket.send(fileName)
             # newSocket.send(str(receivedFiles))
 
+
     else:
         print 'No files listed'
-    print 'Closing Data connection \n'
+    print 'Closing Data connection'
     newSocket.close()
     print 'Data connection closed'
+    print '\n'
 
 
 def getFile(fileName,clientSocket,serverAddress):
     print "Data Connection Setup"
     ephemPort = clientSocket.recv(SERVER_MSG_SIZE)
-    print 'test'
     print "Data Connection: " + serverAddress + "at port "+str(ephemPort)
     newSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -74,7 +75,7 @@ def getFile(fileName,clientSocket,serverAddress):
 
     while(bytesRecvd != int(fileSize)):
         tempData = newSocket.recv(SERVER_MSG_SIZE)
-        print tempData
+        # print tempData
         bytesRecvd += len(tempData)
 
         if not tempData:
@@ -85,6 +86,7 @@ def getFile(fileName,clientSocket,serverAddress):
     inputFile.close()
     newSocket.close()
     print 'Data Connection closed'
+    print '\n'
 
 
 
@@ -92,10 +94,10 @@ def getFile(fileName,clientSocket,serverAddress):
 def main():
 
     # Get the host name (or IP)
-    serverAddress = "localHost"
+    serverAddress = sys.argv[1]
 
     # Get the server's port number
-    serverPort = 1200
+    serverPort = int(sys.argv[2])
 
     # The size of the message sent by server
     SERVER_MSG_SIZE = 1024
