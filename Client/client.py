@@ -82,6 +82,7 @@ def getFile(fileName,clientSocket,serverAddress):
         inputFile.write(tempData)
     print 'Recieved ' + str(bytesRecvd) + ' bytes out of ' +str(fileSize) + ' bytes'
     print 'Closing Data Connection'
+    inputFile.close()
     newSocket.close()
     print 'Data Connection closed'
 

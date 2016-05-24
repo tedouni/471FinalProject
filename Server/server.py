@@ -85,23 +85,14 @@ def serverSendFile(fileName, client):
 		bytesSent = 0
 
 
-		while(bytesSent <= int(fileSize)):
-			print 'HELLOTEST'
+		while(bytesSent != int(fileSize)):
 			tempData = outputFile.read(64)
 			newClient.send(tempData)
 			bytesSent += len(tempData)
+	outputFile.close()
 	print 'Closing Data Connection'
 	newClient.close()
 
-
-
-
-	localFiles = os.listdir(".")
-	for file in localFiles:
-		print file
-	print len(localFiles)
-	#Send current item
-	newClient.send(str(len(localFiles)))
 
 
 
